@@ -17,7 +17,7 @@ def generate_html():
         <title>Demo Page for UKIS 2024</title>
         <h1>Demo Page for UKIS 2024</h1>
         <p>In this work we aim to explore the range of prosodic diversity obtainable from Large Speech Models. The following samples are manually selected from multiple renditions to represent prosodic diversity.</p>
-        <p><i>All samples created with Parler TTS, a HuggingFace Implementation of Natural language guidance of high-fidelity text-to-speech with synthetic annotations <a href="https://arxiv.org/pdf/2402.01912">Lyth & King 2024</a></i></p>
+        <p><i>All samples generated with <a href="https://huggingface.co/parler-tts">ParlerTTS</a>, a HuggingFace Implementation of Natural language guidance of high-fidelity text-to-speech with synthetic annotations <a href="https://arxiv.org/pdf/2402.01912">Lyth & King 2024</a></i></p>
         <script>
             function loadAudioFiles() {
                 const folder = document.getElementById('folder-select').value;
