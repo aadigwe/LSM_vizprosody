@@ -1,0 +1,351 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Audio Points Plot</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; }
+            #plot { 
+                width: 800px; 
+                height: 800px;
+                border: 1px solid #ccc; 
+                position: relative; 
+                background-image: url(https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/plots/PCA_wavlm_fill100.svg);
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            .audio-player { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: inline-block; margin: 5px; }
+            .audio-info { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm;  }
+            .rank-info { position: absolute; top: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm; }
+            .play-button { cursor: pointer; color: black; padding: 5px 5px; border: none; font-size: 2.5mm; }
+            .toggle-button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            }
+
+            .toggle-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="plot"></div>
+        <script>
+            const data = [
+                { x: 433.21222392815, y: 387.3131168704478, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00253.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 700.5773818418016, y: 506.94820788342355, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00269.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 608.5509557980306, y: 303.1366673961629, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00042.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 662.1265298253699, y: 674.8447462958815, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00139.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 363.93067099414964, y: 168.61420701212262, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00075.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 693.9239151132246, y: 667.5950958967508, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00003.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 494.36397363912334, y: 160.58322636623086, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00070.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 537.4354747500721, y: 291.06881039570504, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00319.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 384.8225145832774, y: 158.0015264341862, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00079.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 643.5068422039834, y: 638.3658712399098, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00063.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 315.5244795143031, y: 221.7900689224757, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00098.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 467.1697914354714, y: 611.0618537990513, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00223.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 42.88312467092897, y: 556.2382093094673, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00068.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 491.4787124394688, y: 518.8200379051304, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00029.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 332.47777874693367, y: 88.99264657954802, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00212.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 661.391819755173, y: 688.2051852786366, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00240.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 601.2146388404533, y: 366.37957103824465, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00044.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 606.7490594047471, y: 248.48331661342434, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00333.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 693.8959698671744, y: 399.2479041814783, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00059.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 743.3502410148295, y: 509.7710537130896, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00062.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 719.5827181984212, y: 659.0414110979991, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00079.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 94.91019248463707, y: 660.9497458566672, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00114.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 684.6860786549312, y: 492.6856845190962, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00244.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 548.7532583896499, y: 154.09627259551928, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00346.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 594.4676219728533, y: 169.4684974286895, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00232.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 150.04803892028087, y: 647.9678387958913, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00134.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 507.55810246676833, y: 48.125882512008275, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00289.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 440.44065188205985, y: 143.1212493077777, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00337.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 622.2944376934739, y: 599.436256520183, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00102.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 415.1656126070869, y: 533.0168998959102, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/parler-default_sent19_temp-0.8_iter-0.wav", sampled: false, rank: 100, score: 0.0, category: "parler-default", category_color: "#8de5a1", color: "transparent" },
+{ x: 563.9306355278611, y: 262.7937040354615, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00065.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 681.2588436512756, y: 364.0605012162014, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00271.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 525.1866502200213, y: 466.3456645357797, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00377.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 563.1682539603, y: 551.2149487524987, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00365.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 499.67136816922294, y: 79.95972039816252, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00287.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 716.9379890904929, y: 404.00586330352945, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00325.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 148.36239278310254, y: 495.7764176818463, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00096.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 358.7216179103882, y: 444.5377837965546, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00005.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 633.7587935446401, y: 514.4185619222978, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00109.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 364.71040782015547, y: 66.95877126049538, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00082.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 291.1904421907354, y: 495.01640961380883, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00160.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 731.4376571470237, y: 615.0569218902183, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00100.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 775.987027579645, y: 518.9915975250315, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00039.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 666.6275216827635, y: 610.3664763295972, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00060.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 343.93891839990226, y: 466.66871010289856, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00190.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 636.2468710841225, y: 555.4345478116878, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00293.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 183.75569611115705, y: 561.1768202121482, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00233.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 723.4982628743685, y: 504.86597349481815, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00030.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 116.2613332323838, y: 628.3980292240501, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00352.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 431.9289627456407, y: 451.7473129976578, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00301.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 495.105001768182, y: 194.16587002566143, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00319.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 675.4111526756647, y: 406.71708954356416, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00282.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 599.5956716925252, y: 324.56633781714544, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00127.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 636.8250431122349, y: 452.0630992364571, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00150.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 300.42661730231026, y: 124.1551665783627, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00079.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 591.8780788553017, y: 783.1114065403572, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00344.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 500.3023105208654, y: 136.61549423383894, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00323.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 549.0485753920905, y: 412.0025320057483, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00289.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 440.5186380045027, y: 322.478582345614, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00206.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 124.81412347559018, y: 638.8063232624246, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00372.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 609.7550380931107, y: 373.04853066196637, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00134.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 408.01073596852643, y: 113.798895767658, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00120.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 619.3361304255081, y: 223.90523340147706, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00142.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 360.28357973809585, y: 81.44049742222705, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00167.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 652.8916989843675, y: 419.1043313305434, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00168.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 687.4609452043229, y: 688.4367767862872, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00204.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 472.90677573108456, y: 361.25915410388353, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00331.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 358.25910731997607, y: 71.26326817910865, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00123.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 432.8605203612352, y: 73.36966565665318, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00315.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 453.3660808895786, y: 716.9077254776937, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00234.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 420.4318668088869, y: 463.9238744053838, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00075.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 477.5842465753418, y: 406.82402708300606, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00082.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 710.7701285014016, y: 491.9333933771116, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00073.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 395.5366617171072, y: 142.3068564758895, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00012.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 489.09827631640945, y: 322.667651963071, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00138.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 587.9444419020613, y: 308.6790045574299, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00067.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 274.7368004425707, y: 127.28156137764813, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00026.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 579.8097533288517, y: 355.2902846479352, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00335.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 27.63515049527304, y: 551.8602034658891, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00299.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 675.4935550187057, y: 541.657524424859, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00305.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 690.7517315285712, y: 590.9989692702349, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00071.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 670.5688391367712, y: 400.09033178733483, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00238.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 113.02457526624717, y: 659.3391917618716, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00206.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 725.9511142909444, y: 763.8100180055205, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00190.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 755.0151284769382, y: 707.1458171923169, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00379.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 110.75507083993213, y: 638.594379378597, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00016.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 510.5899580146147, y: 471.86048912454936, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00229.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 710.3338770089225, y: 688.411991256699, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00345.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 381.2471720465572, y: 261.470225256993, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00046.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 582.6909473279716, y: 310.02249267078906, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00001.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 85.67001819149803, y: 627.8777398090781, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00106.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 65.78055328193452, y: 579.8748840013089, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00198.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 349.0393012521116, y: 247.6638979996036, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00299.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 74.06236957307787, y: 577.532004340771, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00330.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 333.3259485851939, y: 203.542932298766, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00102.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 570.3474202981477, y: 124.50151526502702, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00292.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 584.9205702459845, y: 339.19218972681, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00102.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 609.8720824882035, y: 306.960621755388, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00045.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 344.872007424264, y: 0.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00147.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 503.74002686026313, y: 221.7717617077402, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00080.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 80.37988700360373, y: 752.6583577166258, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00151.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 379.71555787427803, y: 34.794773822182606, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00216.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 125.34867407188554, y: 687.5773162499788, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00064.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 250.58222930685994, y: 233.88575317585025, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00160.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 388.9033961641912, y: 118.61050792305787, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00070.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 279.4426390283768, y: 393.65699718641156, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00159.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 482.7322779746764, y: 206.19331288405192, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00345.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 572.8351332053792, y: 275.3352432764174, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00076.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 411.4828938679139, y: 139.53119070032199, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00144.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 535.9874132456081, y: 74.0017650730656, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00241.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 756.0574542564498, y: 496.8253551384777, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00097.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 585.4886634572958, y: 483.5726635857823, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00290.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 707.3200255873096, y: 763.2620467305047, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00350.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 301.0174438950037, y: 338.181147673504, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00243.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 543.8459494129395, y: 220.6029175692563, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00306.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 523.3346595196883, y: 83.54526771665007, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00170.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 619.2638679271727, y: 547.8857058245717, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00330.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 440.97789660376566, y: 73.34425882115124, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00265.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 696.8452493159095, y: 397.37071675440916, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00201.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 300.0405599921082, y: 37.9400051586631, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00054.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 99.6513600588371, y: 684.476188612547, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00183.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 612.2022115417262, y: 413.63962395011606, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00186.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 488.5313372865262, y: 581.3964207123805, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00225.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 44.09360126798399, y: 613.5666505240647, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00083.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 487.95279664876654, y: 498.4515622924229, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00372.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 474.42927022276314, y: 218.07434820184665, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00073.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 460.3351763013399, y: 496.3604374022926, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/parler-default_sent12_temp-1.0_iter-4.wav", sampled: false, rank: 100, score: 0.0, category: "parler-default", category_color: "#8de5a1", color: "transparent" },
+{ x: 624.9157846799808, y: 444.06716161869105, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00288.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 356.0357479964757, y: 33.380334742562695, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00137.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 113.9318552087265, y: 676.6921244923375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00121.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 750.6807009542384, y: 439.5256018517114, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00333.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 415.0513771343758, y: 147.3459983435116, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00115.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 620.8514397399913, y: 584.8342713414643, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00058.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 457.685915367667, y: 153.08387766125372, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00188.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 284.6894801800073, y: 361.99408513797255, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/parler-laughing_sent20_temp-1.2_iter-1.wav", sampled: false, rank: 100, score: 0.0, category: "parler-laughing", category_color: "#fab0e4", color: "transparent" },
+{ x: 600.4522711178844, y: 454.0616283847553, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00110.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 350.6189789738226, y: 432.19004790508035, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00007.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 481.15602154409214, y: 322.6682085195915, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00283.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 389.56267535204756, y: 563.163586263659, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/parler-sad_sent09_temp-1.2_iter-0.wav", sampled: false, rank: 100, score: 0.0, category: "parler-sad", category_color: "#fffea3", color: "transparent" },
+{ x: 470.2980172055912, y: 117.90667918586746, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00144.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 551.2808500504528, y: 616.4755587233605, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00212.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 418.29429291911396, y: 559.062603732581, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00199.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 651.2772957386095, y: 549.5095301549819, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00233.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 621.0498934108091, y: 280.3318376635159, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00088.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 643.187343249618, y: 446.9500788228115, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00340.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 739.6898559749849, y: 623.3131531476852, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00082.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 669.9384041920649, y: 340.9305634154289, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00264.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 0.0, y: 619.607311432192, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00315.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 445.5399956687165, y: 42.121373416597066, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00290.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 634.573586309378, y: 388.0743905366117, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00292.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 598.0464095547735, y: 424.94721063180157, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00072.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 79.09265626172743, y: 608.80764848794, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00226.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 477.3967114892911, y: 193.00861056166332, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00332.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 680.1436979955721, y: 502.2634944778043, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00084.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 79.81479694441053, y: 645.7308266522671, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00182.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 598.2276656536757, y: 295.8620081322107, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00267.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 599.862063765561, y: 553.6733900965042, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00059.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 462.7723733077101, y: 108.69855047212923, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00186.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 152.67400955045986, y: 631.8464289886167, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00009.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 402.3776726261166, y: 60.57525010486313, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00277.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 535.3354116114983, y: 91.56138443701832, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00199.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 56.39041712821308, y: 603.6193411853861, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00317.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 572.1147936134217, y: 174.0976099742826, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00248.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 127.05539490842452, y: 636.6143550506924, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00015.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 711.5148909488265, y: 625.7086925977943, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00154.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 677.6512709057866, y: 505.3761646210637, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00001.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 490.34948113250056, y: 122.66240344567643, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00256.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 800.0, y: 755.2358315056075, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00367.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 439.54329941058654, y: 462.77910979057947, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00276.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 496.4132016408551, y: 429.54978743140384, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00316.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 466.9033938057865, y: 342.3827392564445, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00059.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 638.5480957891408, y: 756.0361300639748, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00276.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 570.8894144387514, y: 338.9171996511403, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00205.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 68.81831220552252, y: 622.8686975633037, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00202.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 743.5951502737624, y: 643.9161645325316, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00116.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 342.8335744704985, y: 580.0684565737641, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00210.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 577.4255130187779, y: 319.5744562015346, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00183.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 395.58063097724994, y: 106.8498534448604, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00104.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 460.9671529620256, y: 457.00455190976385, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00191.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 441.1217046533979, y: 238.36617754858048, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00138.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 677.69061612388, y: 694.7342138714976, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00088.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 399.29228280598454, y: 301.29520828765726, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00096.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 713.0980735725345, y: 465.5935944347123, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/enunciated_ex02_00346.wav", sampled: false, rank: 100, score: 0.0, category: "enunciated", category_color: "#b9f2f0", color: "transparent" },
+{ x: 510.934645392223, y: 493.2607472876515, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/laughing_ex02_00245.wav", sampled: false, rank: 100, score: 0.0, category: "laughing", category_color: "#cfcfcf", color: "transparent" },
+{ x: 491.00715293466254, y: 32.69061059074852, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00166.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+{ x: 708.7244668560892, y: 486.31967502197944, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00297.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 334.8290539088804, y: 218.62727296472178, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00061.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 40.469515622564735, y: 597.2728450869229, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00254.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 434.50533385319216, y: 38.61190800302654, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00090.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 389.8609932808352, y: 296.9433327703309, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00359.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 100.16001865973246, y: 616.9120476903817, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00220.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 726.798372380008, y: 662.8194811991814, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00355.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 513.6463085621116, y: 499.27761347499575, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/parler-sad_sent18_temp-1.2_iter-1.wav", sampled: false, rank: 100, score: 0.0, category: "parler-sad", category_color: "#fffea3", color: "transparent" },
+{ x: 662.564454976001, y: 748.983900644218, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00305.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 397.7396588142566, y: 377.2609410540934, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/parler-laughing_sent26_temp-0.8_iter-3.wav", sampled: false, rank: 100, score: 0.0, category: "parler-laughing", category_color: "#fab0e4", color: "transparent" },
+{ x: 9.20737192654713, y: 698.7906924589247, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/whisper_ex02_00027.wav", sampled: false, rank: 100, score: 0.0, category: "whisper", category_color: "#d0bbff", color: "transparent" },
+{ x: 664.5151157955494, y: 800.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00172.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 675.2633084772423, y: 657.0991362618677, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00157.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 356.63021664574205, y: 148.32217567887733, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/happy_ex02_00287.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#debb9b", color: "transparent" },
+{ x: 669.9389966232309, y: 503.0753516301749, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/confused_ex02_00076.wav", sampled: false, rank: 100, score: 0.0, category: "confused", category_color: "#ff9f9b", color: "transparent" },
+{ x: 696.2075344991975, y: 605.3450009028684, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/sad_ex02_00015.wav", sampled: false, rank: 100, score: 0.0, category: "sad", category_color: "#a1c9f4", color: "transparent" },
+{ x: 544.6915150239425, y: 183.68428791763506, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/audios_upload/default_ex02_00253.wav", sampled: false, rank: 100, score: 0.0, category: "default", category_color: "#ffb482", color: "transparent" },
+            ];
+
+            const plot = document.getElementById('plot');
+            const audioPlayers = [];
+
+
+            function toggleAllText() {
+                var audioInfos = document.querySelectorAll('.audio-info');
+                var button = document.querySelector('.toggle-button');
+                var allHidden = true;
+
+                // Check if all divs are currently hidden
+                audioInfos.forEach(function (div) {
+                    if (div.style.display !== 'none') {
+                        allHidden = false;
+                    }
+                });
+
+                // Toggle visibility based on current state
+                audioInfos.forEach(function (div) {
+                    if (allHidden) {
+                        div.style.display = 'block';  // Show all if all are hidden
+                        button.textContent = 'Hide All Audio Info';
+                    } else {
+                        div.style.display = 'none';   // Hide all if any are visible
+                        button.textContent = 'Show All Audio Info';
+                    }
+                });
+            }
+
+
+            data.forEach(point => {
+                const audioPlayer = document.createElement('div');
+                audioPlayer.className = 'audio-player';
+                audioPlayer.style.left = `${point.x}px`;
+                audioPlayer.style.top = `${point.y}px`;
+
+                const audio = document.createElement('audio');
+                audio.src = point.audio;
+                audio.controls = false;
+
+                const audioInfo = document.createElement('div');
+                audioInfo.className = 'audio-info';
+                audioInfo.textContent = point.audio.split('/').pop();
+
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button';
+                playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                playButton.style.backgroundSize = 'contain';
+                playButton.style.backgroundRepeat = 'no-repeat';
+                playButton.style.width = '15px';
+                playButton.style.height = '15px';
+                playButton.style.border = 'none';
+                playButton.style.backgroundColor = 'transparent';
+                playButton.style.backgroundColor = point.category_color;
+
+                playButton.addEventListener('click', () => {
+                    if (audio.paused) {
+                        audio.play();
+                        playButton.textContent = 'Pause';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/pause-play-icon/pause-play-icon-17.jpg')";
+                    } else {
+                        audio.pause();
+                        playButton.textContent = 'Play';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                    }
+                });
+
+            audioPlayer.appendChild(audioInfo);
+            audioPlayer.appendChild(playButton);
+
+            if (point.sampled === true) {
+                const audioRANK = document.createElement('div');
+                audioRANK.className = 'rank-info';
+                audioRANK.textContent = ` Rank: ${point.rank}  Score: ${point.score}`;
+                if (point.rank == 1) {
+                    audioRANK.textContent = ` Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.color = 'black';
+                    audioRANK.style.backgroundImage = "url('https://icon-library.com/images/cherry1600.png')";
+                    audioRANK.style.backgroundSize = 'contain';
+                    audioRANK.style.backgroundRepeat = 'no-repeat';
+                    audioRANK.style.width = '30px';
+                    audioRANK.style.height = '30px';
+                } else {
+
+                    audioRANK.textContent = `Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.backgroundColor = point.color;
+                }
+
+                audioPlayer.appendChild(audioRANK);
+            }
+
+
+            audioPlayers.push(audioPlayer);
+            plot.appendChild(audioPlayer);
+            });
+        </script>
+        <h1>ExpressoF2NaturalParler</h1>
+        <h2>-</h2>
+        <h3>Transcript: -</h3>
+        <button class="toggle-button" onclick="toggleAllText()">Show All Audio Info</button>
+        <br />
+        <h3>data_prosody_distribution.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/plots/data_prosody_distribution.svg"><br><hr>
+<h3>TSNE_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/plots/TSNE_wavlm_fill100.svg"><br><hr>
+<h3>PCA_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/plots/PCA_wavlm_fill100.svg"><br><hr>
+<h3>UMAP_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/ExpressoF2NaturalParler/plots/UMAP_wavlm_fill100.svg"><br><hr>
+
+    </body>
+    </html>
+    
+    
