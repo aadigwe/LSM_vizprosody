@@ -1,0 +1,210 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Audio Points Plot</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; }
+            #plot { 
+                width: 800px; 
+                height: 800px;
+                border: 1px solid #ccc; 
+                position: relative; 
+                background-image: url(https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/plots/PCA_wavlm_fill100.svg);
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            .audio-player { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: inline-block; margin: 5px; }
+            .audio-info { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm;  }
+            .rank-info { position: absolute; top: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm; }
+            .play-button { cursor: pointer; color: black; padding: 5px 5px; border: none; font-size: 2.5mm; }
+            .toggle-button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            }
+
+            .toggle-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="plot"></div>
+        <script>
+            const data = [
+                { x: 185.8982734014716, y: 326.65034820848075, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7B_utt007.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 572.2583412270741, y: 125.38604477783281, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/video_7C_utt011.wav", sampled: false, rank: 100, score: 0.0, category: "video", category_color: "#ffb482", color: "transparent" },
+{ x: 216.38849383273288, y: 489.01068429704526, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/instructions_7A_utt009.wav", sampled: false, rank: 100, score: 0.0, category: "instructions", category_color: "#debb9b", color: "transparent" },
+{ x: 306.9860138519867, y: 383.23975766816653, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt015.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 187.83418246888104, y: 317.5285925491232, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/instructions_7A_utt012.wav", sampled: false, rank: 100, score: 0.0, category: "instructions", category_color: "#debb9b", color: "transparent" },
+{ x: 71.99184741369506, y: 531.3667733463349, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7C_utt009.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 452.681066274717, y: 390.11749533258416, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt005.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 670.4902453846951, y: 118.00100356854603, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/video_7C_utt001.wav", sampled: false, rank: 100, score: 0.0, category: "video", category_color: "#ffb482", color: "transparent" },
+{ x: 489.77183569944395, y: 381.4352472746542, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/video_7C_utt009.wav", sampled: false, rank: 100, score: 0.0, category: "video", category_color: "#ffb482", color: "transparent" },
+{ x: 87.19812466019539, y: 307.0950475191954, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7A_utt010.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 800.0, y: 196.43575082719155, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt027.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 549.3708763923988, y: 615.3270837628476, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt007.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 76.09404734797916, y: 251.6681754309668, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/annoyed_7C_utt008.wav", sampled: false, rank: 100, score: 0.0, category: "annoyed", category_color: "#a1c9f4", color: "transparent" },
+{ x: 22.234287198430934, y: 476.62712956773873, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7A_utt009.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 244.86621891332635, y: 348.2497734015013, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/happy_7B_utt005.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#ff9f9b", color: "transparent" },
+{ x: 224.1966718368015, y: 462.8986375925163, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7B_utt010.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 68.09691953985997, y: 625.0537626675617, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7C_utt004.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 544.651720492814, y: 289.86730114278953, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/video_7C_utt014.wav", sampled: false, rank: 100, score: 0.0, category: "video", category_color: "#ffb482", color: "transparent" },
+{ x: 36.265123998598916, y: 272.0117486396323, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/neutral_7A_utt006.wav", sampled: false, rank: 100, score: 0.0, category: "neutral", category_color: "#8de5a1", color: "transparent" },
+{ x: 459.2462348124097, y: 587.8061799006507, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt011.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 464.5039448624145, y: 565.2181411884472, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt008.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 447.7278192425074, y: 562.1906785865135, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt014.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 93.11652038986624, y: 434.5153808641471, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/annoyed_7C_utt009.wav", sampled: false, rank: 100, score: 0.0, category: "annoyed", category_color: "#a1c9f4", color: "transparent" },
+{ x: 74.86442935358266, y: 492.6021143386025, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/neutral_7A_utt002.wav", sampled: false, rank: 100, score: 0.0, category: "neutral", category_color: "#8de5a1", color: "transparent" },
+{ x: 131.5695564190684, y: 482.89856158639515, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7C_utt001.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 122.63333718668228, y: 345.58013871531597, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/neutral_7A_utt007.wav", sampled: false, rank: 100, score: 0.0, category: "neutral", category_color: "#8de5a1", color: "transparent" },
+{ x: 142.12546135540606, y: 379.1705083806054, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7A_utt002.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 714.1450392769088, y: 718.8402240650049, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt001.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 129.8327960191513, y: 451.314280556484, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7B_utt009.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 132.6360976580566, y: 488.7519566883809, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/neutral_7A_utt008.wav", sampled: false, rank: 100, score: 0.0, category: "neutral", category_color: "#8de5a1", color: "transparent" },
+{ x: 140.51483509542894, y: 220.3202535365357, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/annoyed_7C_utt006.wav", sampled: false, rank: 100, score: 0.0, category: "annoyed", category_color: "#a1c9f4", color: "transparent" },
+{ x: 595.4400168100435, y: 355.01079532633605, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/video_7C_utt005.wav", sampled: false, rank: 100, score: 0.0, category: "video", category_color: "#ffb482", color: "transparent" },
+{ x: 168.6943452895889, y: 308.3750781377056, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/instructions_7A_utt013.wav", sampled: false, rank: 100, score: 0.0, category: "instructions", category_color: "#debb9b", color: "transparent" },
+{ x: 0.0, y: 352.6625045161939, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/neutral_7A_utt009.wav", sampled: false, rank: 100, score: 0.0, category: "neutral", category_color: "#8de5a1", color: "transparent" },
+{ x: 31.510457364752526, y: 367.9509831788689, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/instructions_7A_utt006.wav", sampled: false, rank: 100, score: 0.0, category: "instructions", category_color: "#debb9b", color: "transparent" },
+{ x: 163.16670966227537, y: 314.40699283847493, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/instructions_7A_utt001.wav", sampled: false, rank: 100, score: 0.0, category: "instructions", category_color: "#debb9b", color: "transparent" },
+{ x: 133.73815459646033, y: 380.0562059668267, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7A_utt005.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 502.02147039186497, y: 731.1926623786433, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt006.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 574.8052378122117, y: 68.46767876091155, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/video_7C_utt006.wav", sampled: false, rank: 100, score: 0.0, category: "video", category_color: "#ffb482", color: "transparent" },
+{ x: 210.257904261366, y: 442.09086514790965, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/happy_7B_utt002.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#ff9f9b", color: "transparent" },
+{ x: 203.9575408864811, y: 261.30750942991904, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt004.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 485.35642197177526, y: 676.2198492595157, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt002.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 370.4136562080839, y: 473.2967090812397, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7B_utt008.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 93.50305118403425, y: 283.15718785022614, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/annoyed_7C_utt005.wav", sampled: false, rank: 100, score: 0.0, category: "annoyed", category_color: "#a1c9f4", color: "transparent" },
+{ x: 158.6824147708051, y: 279.5043601899798, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7B_utt002.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 679.8072752119816, y: 800.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt013.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 192.283624781578, y: 442.34792818288156, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/instructions_7A_utt002.wav", sampled: false, rank: 100, score: 0.0, category: "instructions", category_color: "#debb9b", color: "transparent" },
+{ x: 199.3745987232967, y: 515.5166912126328, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7C_utt006.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 505.9629369227012, y: 222.71995322875057, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/video_7C_utt004.wav", sampled: false, rank: 100, score: 0.0, category: "video", category_color: "#ffb482", color: "transparent" },
+{ x: 113.06170122289004, y: 422.597444543711, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/annoyed_7C_utt004.wav", sampled: false, rank: 100, score: 0.0, category: "annoyed", category_color: "#a1c9f4", color: "transparent" },
+{ x: 143.36918227778247, y: 363.5133790571209, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/instructions_7A_utt014.wav", sampled: false, rank: 100, score: 0.0, category: "instructions", category_color: "#debb9b", color: "transparent" },
+{ x: 414.4532348679421, y: 333.78802397784943, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt003.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 150.3229982606351, y: 481.5743488819571, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/instructions_7A_utt003.wav", sampled: false, rank: 100, score: 0.0, category: "instructions", category_color: "#debb9b", color: "transparent" },
+{ x: 447.58190330160755, y: 313.0893943378388, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/video_7C_utt008.wav", sampled: false, rank: 100, score: 0.0, category: "video", category_color: "#ffb482", color: "transparent" },
+{ x: 153.45610694355307, y: 406.5016908404372, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7B_utt004.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 550.1373036596856, y: 568.6138204705712, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt020.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+{ x: 103.6641437573063, y: 369.05628878450545, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7C_utt005.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 295.9970688081462, y: 242.2453827848393, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/happy_7B_utt004.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#ff9f9b", color: "transparent" },
+{ x: 42.15157125695731, y: 496.1118511933365, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/sentences_7A_utt006.wav", sampled: false, rank: 100, score: 0.0, category: "sentences", category_color: "#d0bbff", color: "transparent" },
+{ x: 577.8853462396885, y: 0.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/happy_7B_utt007.wav", sampled: false, rank: 100, score: 0.0, category: "happy", category_color: "#ff9f9b", color: "transparent" },
+{ x: 484.09525975441403, y: 402.6287692269994, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/audios_upload/phonecall_7B_utt019.wav", sampled: false, rank: 100, score: 0.0, category: "phonecall", category_color: "#fab0e4", color: "transparent" },
+            ];
+
+            const plot = document.getElementById('plot');
+            const audioPlayers = [];
+
+
+            function toggleAllText() {
+                var audioInfos = document.querySelectorAll('.audio-info');
+                var button = document.querySelector('.toggle-button');
+                var allHidden = true;
+
+                // Check if all divs are currently hidden
+                audioInfos.forEach(function (div) {
+                    if (div.style.display !== 'none') {
+                        allHidden = false;
+                    }
+                });
+
+                // Toggle visibility based on current state
+                audioInfos.forEach(function (div) {
+                    if (allHidden) {
+                        div.style.display = 'block';  // Show all if all are hidden
+                        button.textContent = 'Hide All Audio Info';
+                    } else {
+                        div.style.display = 'none';   // Hide all if any are visible
+                        button.textContent = 'Show All Audio Info';
+                    }
+                });
+            }
+
+
+            data.forEach(point => {
+                const audioPlayer = document.createElement('div');
+                audioPlayer.className = 'audio-player';
+                audioPlayer.style.left = `${point.x}px`;
+                audioPlayer.style.top = `${point.y}px`;
+
+                const audio = document.createElement('audio');
+                audio.src = point.audio;
+                audio.controls = false;
+
+                const audioInfo = document.createElement('div');
+                audioInfo.className = 'audio-info';
+                audioInfo.textContent = point.audio.split('/').pop();
+
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button';
+                playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                playButton.style.backgroundSize = 'contain';
+                playButton.style.backgroundRepeat = 'no-repeat';
+                playButton.style.width = '15px';
+                playButton.style.height = '15px';
+                playButton.style.border = 'none';
+                playButton.style.backgroundColor = 'transparent';
+                playButton.style.backgroundColor = point.category_color;
+
+                playButton.addEventListener('click', () => {
+                    if (audio.paused) {
+                        audio.play();
+                        playButton.textContent = 'Pause';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/pause-play-icon/pause-play-icon-17.jpg')";
+                    } else {
+                        audio.pause();
+                        playButton.textContent = 'Play';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                    }
+                });
+
+            audioPlayer.appendChild(audioInfo);
+            audioPlayer.appendChild(playButton);
+
+            if (point.sampled === true) {
+                const audioRANK = document.createElement('div');
+                audioRANK.className = 'rank-info';
+                audioRANK.textContent = ` Rank: ${point.rank}  Score: ${point.score}`;
+                if (point.rank == 1) {
+                    audioRANK.textContent = ` Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.color = 'black';
+                    audioRANK.style.backgroundImage = "url('https://icon-library.com/images/cherry1600.png')";
+                    audioRANK.style.backgroundSize = 'contain';
+                    audioRANK.style.backgroundRepeat = 'no-repeat';
+                    audioRANK.style.width = '30px';
+                    audioRANK.style.height = '30px';
+                } else {
+
+                    audioRANK.textContent = `Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.backgroundColor = point.color;
+                }
+
+                audioPlayer.appendChild(audioRANK);
+            }
+
+
+            audioPlayers.push(audioPlayer);
+            plot.appendChild(audioPlayer);
+            });
+        </script>
+        <h1>UCLASpk07</h1>
+        <h2>-</h2>
+        <h3>Transcript: -</h3>
+        <button class="toggle-button" onclick="toggleAllText()">Show All Audio Info</button>
+        <br />
+        <h3>data_prosody_distribution.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/plots/data_prosody_distribution.svg"><br><hr>
+<h3>TSNE_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/plots/TSNE_wavlm_fill100.svg"><br><hr>
+<h3>PCA_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/plots/PCA_wavlm_fill100.svg"><br><hr>
+<h3>UMAP_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/UCLASpk07/plots/UMAP_wavlm_fill100.svg"><br><hr>
+
+    </body>
+    </html>
+    
+    

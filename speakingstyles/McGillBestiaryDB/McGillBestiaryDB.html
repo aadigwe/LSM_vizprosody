@@ -1,0 +1,249 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Audio Points Plot</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; }
+            #plot { 
+                width: 800px; 
+                height: 800px;
+                border: 1px solid #ccc; 
+                position: relative; 
+                background-image: url(https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/plots/PCA_wavlm_fill100.svg);
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            .audio-player { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: inline-block; margin: 5px; }
+            .audio-info { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm;  }
+            .rank-info { position: absolute; top: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm; }
+            .play-button { cursor: pointer; color: black; padding: 5px 5px; border: none; font-size: 2.5mm; }
+            .toggle-button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            }
+
+            .toggle-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="plot"></div>
+        <script>
+            const data = [
+                { x: 325.37480990293454, y: 146.66247473774752, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1663_5_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 511.67120071584105, y: 468.90036765319206, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/OtherFall_contour_1654_3_1_cont_8.wav", sampled: false, rank: 100, score: 0.0, category: "OtherFall", category_color: "#a1c9f4", color: "transparent" },
+{ x: 430.58594532308945, y: 284.90950648693956, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1677_8_2_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 743.8927400143709, y: 434.9064766639604, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1549_3_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 376.31308293500297, y: 317.1486573227859, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1646_8_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 464.6844838765249, y: 561.7452588728763, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/OtherFall_contour_15_7_1_cont_8.wav", sampled: false, rank: 100, score: 0.0, category: "OtherFall", category_color: "#a1c9f4", color: "transparent" },
+{ x: 464.05444834631624, y: 343.29974188041535, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_1656_6_3_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 375.2944404905214, y: 181.83159206321432, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1649_5_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 142.50097272704355, y: 147.09548192931106, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_930_3_2_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 343.05398182264895, y: 42.24877065877456, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_618_5_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 451.2613714576652, y: 551.0675581095469, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1471_6_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 257.0654610301901, y: 143.04771145368477, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1663_2_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 589.4788245570272, y: 280.44579345476575, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1647_7_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 354.62245746411054, y: 800.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1658_6_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 292.63248586191446, y: 69.52917745779803, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1543_7_3_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 483.8720260006162, y: 368.88515693756875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_1656_6_1_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 272.4711004194992, y: 436.29668810436357, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1659_2_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 698.2636899376507, y: 288.7352204636781, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1600_9_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 180.24663509974823, y: 143.5636717664604, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1543_8_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 346.88670694147606, y: 288.133762970551, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_1649_5_1_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+{ x: 422.6496738711107, y: 438.47715741396064, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_1654_6_3_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 658.5284908749328, y: 525.7812899448614, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_1549_6_3_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 585.1813201848012, y: 280.12922250378006, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1684_6_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 516.8693424085722, y: 617.6433630912053, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_15_6_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 558.9276445877886, y: 63.19113662254131, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1677_1_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 479.9458117595645, y: 235.58282132298928, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1600_2_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 800.0, y: 151.35095266594294, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1648_8_3_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 716.9050125315393, y: 225.34218721819968, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1322_9_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 503.62295758544144, y: 290.10000622709964, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1654_2_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 491.62273283015406, y: 354.2653440944682, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1654_1_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 131.1476947278139, y: 160.76570500614537, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_930_9_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 425.87222628244706, y: 194.06776466390625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1620_6_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 364.45946102459584, y: 293.71430241036103, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Upstepped_contour_1471_2_3_cont_6.wav", sampled: false, rank: 100, score: 0.0, category: "Upstepped", category_color: "#cfcfcf", color: "transparent" },
+{ x: 505.88645559149734, y: 306.41949574566263, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_1620_6_1_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+{ x: 495.86261533926506, y: 374.23367899584133, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1656_1_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 278.0437483538603, y: 16.474981490795017, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1543_6_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 478.13328859044645, y: 133.71563727274292, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_618_6_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 321.60983691585756, y: 782.365654974826, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1658_1_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 399.6507533744517, y: 226.1998170736747, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Upstepped_contour_1663_7_3_cont_6.wav", sampled: false, rank: 100, score: 0.0, category: "Upstepped", category_color: "#cfcfcf", color: "transparent" },
+{ x: 372.39057728460267, y: 263.1522461468395, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1645_5_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 589.7634881930875, y: 313.8352098974061, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1600_7_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 693.9228420298011, y: 255.278599546823, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Upstepped_contour_1620_3_3_cont_6.wav", sampled: false, rank: 100, score: 0.0, category: "Upstepped", category_color: "#cfcfcf", color: "transparent" },
+{ x: 389.2311364293991, y: 228.01872381616408, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1654_4_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 541.8547824428036, y: 417.146145000079, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Presumption_contour_1451_6_1_cont_5.wav", sampled: false, rank: 100, score: 0.0, category: "Presumption", category_color: "#ff9f9b", color: "transparent" },
+{ x: 542.7256984867474, y: 318.6143824475263, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1617_6_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 312.22146020411446, y: 510.13693593338274, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1323_5_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 0.0, y: 144.01592280154193, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_930_4_1_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 268.9186010907898, y: 169.39734611316157, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Presumption_contour_1677_4_1_cont_5.wav", sampled: false, rank: 100, score: 0.0, category: "Presumption", category_color: "#ff9f9b", color: "transparent" },
+{ x: 502.7024347727471, y: 477.36476836160347, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1654_8_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 393.56478204661653, y: 291.970568163036, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1656_2_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 135.06259205318702, y: 337.6712703303804, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1072_4_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 330.847526693832, y: 0.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1663_9_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 498.7014481337697, y: 323.3445373897952, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Presumption_contour_1654_2_1_cont_5.wav", sampled: false, rank: 100, score: 0.0, category: "Presumption", category_color: "#ff9f9b", color: "transparent" },
+{ x: 408.4244235740508, y: 516.96267635141, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1659_5_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 405.22765312614524, y: 248.99516712915784, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1645_4_1_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 245.50968264741044, y: 196.62909913824, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Upstepped_contour_1543_5_3_cont_6.wav", sampled: false, rank: 100, score: 0.0, category: "Upstepped", category_color: "#cfcfcf", color: "transparent" },
+{ x: 646.9031326833206, y: 235.94294920666437, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1600_2_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 310.71238876465424, y: 194.98340165656612, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_1663_5_1_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 347.3468014081019, y: 510.7576956235286, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_1094_6_1_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+{ x: 275.6995446046964, y: 271.2875673370612, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1543_4_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 339.8174446220336, y: 213.82286979352887, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_1663_6_1_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+{ x: 241.98301872081146, y: 156.52539962716776, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1663_5_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 749.8509841620659, y: 538.3184627575129, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_1549_1_1_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 576.7262484110785, y: 247.57511500598685, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1322_2_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 624.3475209813514, y: 272.4746879025662, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1647_1_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 326.9604065684626, y: 554.6070134884316, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1323_8_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 545.1435201292952, y: 140.6719229632722, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1647_3_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 259.26148230163204, y: 430.28341773619263, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1471_5_1_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 396.9265658351337, y: 380.51985216045176, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_1094_2_1_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+{ x: 264.33356410049356, y: 189.86909284920262, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_930_5_1_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 717.1266148222, y: 324.9433486743691, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1451_1_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 412.3677257229435, y: 499.7615236360898, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1471_9_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 191.75682300377449, y: 365.4241210120642, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1072_5_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 440.8366525002794, y: 253.8628012257866, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_1684_2_1_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 224.7274731510422, y: 254.8104075742424, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_930_1_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 543.2603658275632, y: 230.63270016049944, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1647_2_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 484.03626603072496, y: 265.91899636153516, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1645_8_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 434.06567227954713, y: 260.8977749558479, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1677_7_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 544.5267646641664, y: 258.7087443471263, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1451_5_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 350.7057226729805, y: 523.5785365253398, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1323_7_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 353.32827391828516, y: 218.7345045918239, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1649_2_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 387.725258833773, y: 489.14516959249056, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_1094_5_1_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+{ x: 143.36190171821258, y: 156.8154788226816, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_930_2_1_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 171.63793178659515, y: 220.83038327090674, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_1543_8_1_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+{ x: 561.7061531286836, y: 284.7992974777786, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1647_5_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 426.4258347380516, y: 251.11165458276355, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1649_9_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 234.8719394105998, y: 415.52406343330296, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1659_7_1_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 503.0366193801694, y: 429.2254810660694, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_1654_7_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 625.3499176173432, y: 98.09153092618203, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1322_9_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 464.8320805825528, y: 260.81532770139256, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Fall_contour_1677_6_1_cont_0.wav", sampled: false, rank: 100, score: 0.0, category: "Fall", category_color: "#8de5a1", color: "transparent" },
+{ x: 510.05618039254745, y: 451.7862466246516, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_15_9_3_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+{ x: 356.35456881065, y: 117.66454152194899, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1617_5_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 536.6300765741929, y: 509.11376165559835, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Presumption_contour_1656_1_1_cont_5.wav", sampled: false, rank: 100, score: 0.0, category: "Presumption", category_color: "#ff9f9b", color: "transparent" },
+{ x: 627.3194097821932, y: 249.86611473610913, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1620_3_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 59.100861935644076, y: 155.11712852655035, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/RFR_contour_930_4_3_cont_2.wav", sampled: false, rank: 100, score: 0.0, category: "RFR", category_color: "#ffb482", color: "transparent" },
+{ x: 286.67718181106477, y: 437.35740479290234, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1471_4_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 573.8669391955266, y: 131.5470729970126, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Contradiction_contour_1322_2_1_cont_4.wav", sampled: false, rank: 100, score: 0.0, category: "Contradiction", category_color: "#debb9b", color: "transparent" },
+{ x: 663.5087848615167, y: 198.4191063166321, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1647_9_1_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 496.1495724127892, y: 279.11869515196963, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/YesNoRise_contour_1617_1_2_cont_1.wav", sampled: false, rank: 100, score: 0.0, category: "YesNoRise", category_color: "#d0bbff", color: "transparent" },
+{ x: 400.44993940559374, y: 502.0019770023514, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/audios_upload/Polarity_contour_1659_3_1_cont_3.wav", sampled: false, rank: 100, score: 0.0, category: "Polarity", category_color: "#fab0e4", color: "transparent" },
+            ];
+
+            const plot = document.getElementById('plot');
+            const audioPlayers = [];
+
+
+            function toggleAllText() {
+                var audioInfos = document.querySelectorAll('.audio-info');
+                var button = document.querySelector('.toggle-button');
+                var allHidden = true;
+
+                // Check if all divs are currently hidden
+                audioInfos.forEach(function (div) {
+                    if (div.style.display !== 'none') {
+                        allHidden = false;
+                    }
+                });
+
+                // Toggle visibility based on current state
+                audioInfos.forEach(function (div) {
+                    if (allHidden) {
+                        div.style.display = 'block';  // Show all if all are hidden
+                        button.textContent = 'Hide All Audio Info';
+                    } else {
+                        div.style.display = 'none';   // Hide all if any are visible
+                        button.textContent = 'Show All Audio Info';
+                    }
+                });
+            }
+
+
+            data.forEach(point => {
+                const audioPlayer = document.createElement('div');
+                audioPlayer.className = 'audio-player';
+                audioPlayer.style.left = `${point.x}px`;
+                audioPlayer.style.top = `${point.y}px`;
+
+                const audio = document.createElement('audio');
+                audio.src = point.audio;
+                audio.controls = false;
+
+                const audioInfo = document.createElement('div');
+                audioInfo.className = 'audio-info';
+                audioInfo.textContent = point.audio.split('/').pop();
+
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button';
+                playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                playButton.style.backgroundSize = 'contain';
+                playButton.style.backgroundRepeat = 'no-repeat';
+                playButton.style.width = '15px';
+                playButton.style.height = '15px';
+                playButton.style.border = 'none';
+                playButton.style.backgroundColor = 'transparent';
+                playButton.style.backgroundColor = point.category_color;
+
+                playButton.addEventListener('click', () => {
+                    if (audio.paused) {
+                        audio.play();
+                        playButton.textContent = 'Pause';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/pause-play-icon/pause-play-icon-17.jpg')";
+                    } else {
+                        audio.pause();
+                        playButton.textContent = 'Play';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                    }
+                });
+
+            audioPlayer.appendChild(audioInfo);
+            audioPlayer.appendChild(playButton);
+
+            if (point.sampled === true) {
+                const audioRANK = document.createElement('div');
+                audioRANK.className = 'rank-info';
+                audioRANK.textContent = ` Rank: ${point.rank}  Score: ${point.score}`;
+                if (point.rank == 1) {
+                    audioRANK.textContent = ` Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.color = 'black';
+                    audioRANK.style.backgroundImage = "url('https://icon-library.com/images/cherry1600.png')";
+                    audioRANK.style.backgroundSize = 'contain';
+                    audioRANK.style.backgroundRepeat = 'no-repeat';
+                    audioRANK.style.width = '30px';
+                    audioRANK.style.height = '30px';
+                } else {
+
+                    audioRANK.textContent = `Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.backgroundColor = point.color;
+                }
+
+                audioPlayer.appendChild(audioRANK);
+            }
+
+
+            audioPlayers.push(audioPlayer);
+            plot.appendChild(audioPlayer);
+            });
+        </script>
+        <h1>McGillBestiaryDB</h1>
+        <h2>-</h2>
+        <h3>Transcript: -</h3>
+        <button class="toggle-button" onclick="toggleAllText()">Show All Audio Info</button>
+        <br />
+        <h3>data_prosody_distribution.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/plots/data_prosody_distribution.svg"><br><hr>
+<h3>TSNE_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/plots/TSNE_wavlm_fill100.svg"><br><hr>
+<h3>PCA_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/plots/PCA_wavlm_fill100.svg"><br><hr>
+<h3>UMAP_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/McGillBestiaryDB/plots/UMAP_wavlm_fill100.svg"><br><hr>
+
+    </body>
+    </html>
+    
+    
