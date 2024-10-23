@@ -1,0 +1,299 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Audio Points Plot</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; }
+            #plot { 
+                width: 800px; 
+                height: 800px;
+                border: 1px solid #ccc; 
+                position: relative; 
+                background-image: url(https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/plots/PCA_wavlm_fill100.svg);
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            .audio-player { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: inline-block; margin: 5px; }
+            .audio-info { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm;  }
+            .rank-info { position: absolute; top: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm; }
+            .play-button { cursor: pointer; color: black; padding: 5px 5px; border: none; font-size: 2.5mm; }
+            .toggle-button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            }
+
+            .toggle-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="plot"></div>
+        <script>
+            const data = [
+                { x: 606.5967631173089, y: 587.3941486243548, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10586_varF.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 653.8187264169219, y: 204.97909926999364, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11475_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 366.51670575322163, y: 91.69632576642152, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10395.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 664.0938567886315, y: 191.49126038449845, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10805_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 635.0264876852668, y: 273.2261023710388, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01333_varF.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 306.7753183222391, y: 109.86462635289297, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10317.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 553.8795003960337, y: 217.27083916166043, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10190_varC.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 250.28906792765113, y: 237.28989681697067, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10568.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 666.2893824939405, y: 133.15333169064024, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_00116_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 0.0, y: 352.95314759249106, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10155.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 755.4172624926059, y: 135.85879409650306, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11100_varI.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 773.1717680355305, y: 247.52501048524562, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01040_varG.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 265.8587043200484, y: 154.53629326701093, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10533.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 264.1890584948898, y: 173.3598154585212, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10103.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 218.26295223851923, y: 170.84694000791706, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10546.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 775.422855155278, y: 296.0181131925572, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11363_varG.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 413.63019104913417, y: 200.0741584744951, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01318_varI.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 350.2862312394659, y: 344.9953677307137, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10587_varJ.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 260.0870931895859, y: 263.4339857152495, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10499.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 547.8295704304014, y: 327.9667754521449, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10408_varH.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 143.45306633723558, y: 307.5247887871437, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10200.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 309.6362782778523, y: 160.93648307316096, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10334.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 256.59339622015256, y: 136.43392490899612, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10248.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 328.557221798688, y: 256.8650970782104, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10462.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 782.6182081414903, y: 294.6934595021059, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10779_varJ.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 92.82405311354137, y: 430.05555333963116, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10493.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 231.66558292787238, y: 329.3860768212827, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10419.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 270.5281461285122, y: 207.01808437950592, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10375.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 236.42051474929232, y: 0.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10534.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 32.60966962108488, y: 434.846496101619, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10483.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 292.96117144183876, y: 134.09659939881772, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10183.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 659.4369001754317, y: 278.1500686846997, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11516_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 669.5212771375551, y: 263.49556221139346, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11175_varC.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 149.8865810397488, y: 201.75702946516776, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10184.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 555.7169234997984, y: 360.86320019941763, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10928_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 591.6405952998387, y: 287.21066216082954, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01090_varI.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 79.48116091504673, y: 502.82034478085416, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10310.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 635.6776641303378, y: 266.89464828543566, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10397_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 204.72899569719382, y: 170.1528296736799, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10275.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 283.80242547527286, y: 188.07857563546509, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10336.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 343.0516627574474, y: 145.04132488050527, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10554.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 654.4091014444683, y: 126.08970251117535, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11307_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 164.95500946828506, y: 113.04991312866548, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10214.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 546.6291133776438, y: 230.61761196244345, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10396_varH.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 705.5486753064959, y: 1.5087253518929629, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01279_varA.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 586.9106538072283, y: 170.04011225751276, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10186_varE.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 598.1922478885275, y: 304.35294039326595, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10989_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 684.5646509406653, y: 248.5434451054084, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11276_varG.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 207.43113504041557, y: 286.07655432410616, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10413.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 674.8039589465476, y: 179.8342784897277, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01097_varI.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 534.2916447913467, y: 579.0744535932608, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01084_varH.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 682.6181836513405, y: 232.89152369029716, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10976_varE.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 289.9229561980317, y: 101.81130851554428, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10311.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 662.3171808664936, y: 231.8979581938048, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11249_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 173.4209000965407, y: 416.18119758623686, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10529.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 596.8687859040867, y: 251.6473824705689, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11298_varA.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 109.06892649160824, y: 382.21720900346145, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10401.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 190.46440803587873, y: 306.2484084937722, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10207.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 621.2396742116406, y: 203.14883091710374, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10243_varF.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 583.3500870145369, y: 283.16965603069787, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11075_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 495.6836041913538, y: 281.1768343853456, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10624_varF.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 262.2344466153716, y: 170.2780114746755, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10465.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 541.2118150775195, y: 421.87067060438153, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_00100_varA.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 255.20367184169484, y: 229.30683656109227, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10470.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 451.05607068930595, y: 369.77567991799924, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10547_varF.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 576.673130759259, y: 186.06732506235187, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10378_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 689.8527531303665, y: 224.76345210041893, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11528_varC.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 542.2647305730509, y: 146.2762029540886, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01130_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 278.5974796473305, y: 295.2226151395245, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10359.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 800.0, y: 349.4287501934775, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01297_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 262.3067237878486, y: 109.93525461214745, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10361.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 309.2385353845409, y: 158.1626024533715, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10565.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 353.5111133462331, y: 199.28242316174862, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10254.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 372.73650505486535, y: 266.0932702227742, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10473.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 618.9583102543725, y: 227.19183266024515, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11258_varF.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 339.8466815726192, y: 599.7923562563227, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10426.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 624.9271382904069, y: 248.18298939109457, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10018_varJ.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 296.3894091010244, y: 149.30843960143864, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10351.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 652.0974783600467, y: 285.9824621381847, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01033_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 374.2303656933314, y: 121.71372088960163, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10567.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 195.69794476156642, y: 346.27040569143116, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10119.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 171.29407028366973, y: 243.62706893434347, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10109.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 144.65896828570243, y: 124.33553672493713, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10466.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 211.82865657955213, y: 800.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10385.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 691.2529523679618, y: 206.04349677632024, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01242_varE.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 246.92256573105382, y: 66.74915388442253, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10425.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 397.39380712891256, y: 243.4747148165328, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10557.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 551.1085059592605, y: 283.4777517068693, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10383_varG.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 90.48700811361199, y: 328.22008093709354, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10164.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 412.57570871802614, y: 440.5832080638357, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11089_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 535.0428473007536, y: 288.9631965227702, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11274_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 181.9356602473879, y: 253.36930869047103, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10481.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 168.48262844649423, y: 544.8245106203672, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10198.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 637.3300621837354, y: 278.73129936033945, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10781_varF.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 397.87289668735673, y: 152.01200928390142, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10487.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 608.665757912494, y: 151.64836085243178, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11099_varE.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 706.5469082869049, y: 263.00815016299475, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10794_varH.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 239.70879053210234, y: 260.8027130362251, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10107.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 603.2446870363424, y: 259.9484974632006, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10782_varJ.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 572.8697912391275, y: 186.165114384636, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01109_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 253.63822913323258, y: 117.89571117824357, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10356.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 289.1090503129816, y: 181.8499852651728, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10536.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 494.6340442066239, y: 280.1746536208241, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01336_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 352.4162628403816, y: 169.77365799524773, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10524.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 499.74218219955964, y: 281.0455379345872, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_00114_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 309.381634424047, y: 181.80275927346395, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10561.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 402.9741525959164, y: 431.85409368621055, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10236_varJ.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 589.2655852597748, y: 330.88278180269634, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_00112_varC.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 662.8606064138578, y: 254.5687341162909, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11267_varD.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 168.7686724737271, y: 352.7885751325504, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10140.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 157.91739551476206, y: 316.54923406977076, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10591.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 471.0831038071059, y: 533.3732173132157, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10626_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 325.63639059551963, y: 140.08589732640337, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10575.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 663.7653375590485, y: 138.60766120527785, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10181_varI.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 664.4122209560539, y: 188.68824699281686, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10914_varC.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 746.7134961352658, y: 404.14658056682015, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11317_varG.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 410.22293131967336, y: 141.23963279872999, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10453.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 161.3290845638364, y: 379.8158510849752, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10225.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 174.87591347203605, y: 616.6380491470827, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10124.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 179.46634756179037, y: 117.25046530319173, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10437.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 559.7382580503651, y: 308.79965516958646, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10977_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 469.05615734042783, y: 317.2836711586786, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10023_varA.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 693.6009176068113, y: 205.15884842727974, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01257_varI.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 660.486852905433, y: 402.77655725574516, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10959_varA.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 129.1794517792469, y: 502.0136647599783, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10166.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 637.6905742837214, y: 235.09322090102, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_00102_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 282.3356969479477, y: 102.09662067811905, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10458.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 190.12335427467525, y: 210.60682743804307, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10211.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 280.933757324392, y: 95.92530276033449, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10235.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 577.9368348220471, y: 292.2911416766371, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_01126_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 684.3572619464235, y: 322.9475743162635, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10337_varC.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 283.676560948996, y: 211.85185921035827, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10273.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 211.4099016608795, y: 133.27658258715155, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10128.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 601.7303732653527, y: 273.5608489762874, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10354_varE.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 659.3983882303752, y: 181.00543315375774, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10009_varE.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 167.79892658687697, y: 290.56946751987834, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10354.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 528.7276075914416, y: 532.3602024951153, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10753_varH.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 160.04113115893335, y: 240.05386025286384, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10456.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 216.58859490983127, y: 295.82033622648044, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10571.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 763.1445408592291, y: 237.48357739963865, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10036_varG.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 670.5415573289206, y: 362.3264459871888, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10543_varB.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 284.4608568720804, y: 174.20459966403575, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10574.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 556.6316979888226, y: 290.67483831508724, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11259_varC.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 524.6624389885216, y: 128.06765109966523, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_10192_varI.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 390.9140387976392, y: 115.46125403415942, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10548.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 159.98798303349582, y: 359.9435506381039, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10153.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 322.38399135199853, y: 130.75282657481182, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10390.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 196.9781205284531, y: 225.64346098505757, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/natural_10157.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#ffb482", color: "transparent" },
+{ x: 798.2100505307632, y: 188.599597114311, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11139_varE.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+{ x: 601.8430962488655, y: 367.0826628343301, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/audios_upload/parlertts_11499_varC.wav", sampled: false, rank: 100, score: 0.0, category: "parlertts", category_color: "#a1c9f4", color: "transparent" },
+            ];
+
+            const plot = document.getElementById('plot');
+            const audioPlayers = [];
+
+
+            function toggleAllText() {
+                var audioInfos = document.querySelectorAll('.audio-info');
+                var button = document.querySelector('.toggle-button');
+                var allHidden = true;
+
+                // Check if all divs are currently hidden
+                audioInfos.forEach(function (div) {
+                    if (div.style.display !== 'none') {
+                        allHidden = false;
+                    }
+                });
+
+                // Toggle visibility based on current state
+                audioInfos.forEach(function (div) {
+                    if (allHidden) {
+                        div.style.display = 'block';  // Show all if all are hidden
+                        button.textContent = 'Hide All Audio Info';
+                    } else {
+                        div.style.display = 'none';   // Hide all if any are visible
+                        button.textContent = 'Show All Audio Info';
+                    }
+                });
+            }
+
+
+            data.forEach(point => {
+                const audioPlayer = document.createElement('div');
+                audioPlayer.className = 'audio-player';
+                audioPlayer.style.left = `${point.x}px`;
+                audioPlayer.style.top = `${point.y}px`;
+
+                const audio = document.createElement('audio');
+                audio.src = point.audio;
+                audio.controls = false;
+
+                const audioInfo = document.createElement('div');
+                audioInfo.className = 'audio-info';
+                audioInfo.textContent = point.audio.split('/').pop();
+
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button';
+                playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                playButton.style.backgroundSize = 'contain';
+                playButton.style.backgroundRepeat = 'no-repeat';
+                playButton.style.width = '15px';
+                playButton.style.height = '15px';
+                playButton.style.border = 'none';
+                playButton.style.backgroundColor = 'transparent';
+                playButton.style.backgroundColor = point.category_color;
+
+                playButton.addEventListener('click', () => {
+                    if (audio.paused) {
+                        audio.play();
+                        playButton.textContent = 'Pause';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/pause-play-icon/pause-play-icon-17.jpg')";
+                    } else {
+                        audio.pause();
+                        playButton.textContent = 'Play';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                    }
+                });
+
+            audioPlayer.appendChild(audioInfo);
+            audioPlayer.appendChild(playButton);
+
+            if (point.sampled === true) {
+                const audioRANK = document.createElement('div');
+                audioRANK.className = 'rank-info';
+                audioRANK.textContent = ` Rank: ${point.rank}  Score: ${point.score}`;
+                if (point.rank == 1) {
+                    audioRANK.textContent = ` Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.color = 'black';
+                    audioRANK.style.backgroundImage = "url('https://icon-library.com/images/cherry1600.png')";
+                    audioRANK.style.backgroundSize = 'contain';
+                    audioRANK.style.backgroundRepeat = 'no-repeat';
+                    audioRANK.style.width = '30px';
+                    audioRANK.style.height = '30px';
+                } else {
+
+                    audioRANK.textContent = `Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.backgroundColor = point.color;
+                }
+
+                audioPlayer.appendChild(audioRANK);
+            }
+
+
+            audioPlayers.push(audioPlayer);
+            plot.appendChild(audioPlayer);
+            });
+        </script>
+        <h1>JennyRealSynBatch002</h1>
+        <h2>-</h2>
+        <h3>Transcript: -</h3>
+        <button class="toggle-button" onclick="toggleAllText()">Show All Audio Info</button>
+        <br />
+        <h3>data_prosody_distribution.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/plots/data_prosody_distribution.svg"><br><hr>
+<h3>TSNE_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/plots/TSNE_wavlm_fill100.svg"><br><hr>
+<h3>PCA_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/plots/PCA_wavlm_fill100.svg"><br><hr>
+<h3>UMAP_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealSynBatch002/plots/UMAP_wavlm_fill100.svg"><br><hr>
+
+    </body>
+    </html>
+    
+    
