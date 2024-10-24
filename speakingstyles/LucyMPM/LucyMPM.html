@@ -1,0 +1,201 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Audio Points Plot</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; }
+            #plot { 
+                width: 800px; 
+                height: 800px;
+                border: 1px solid #ccc; 
+                position: relative; 
+                background-image: url(https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/plots/UMAP_mpm_fill100.svg);
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            .audio-player { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: inline-block; margin: 5px; }
+            .audio-info { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm;  }
+            .rank-info { position: absolute; top: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm; }
+            .play-button { cursor: pointer; color: black; padding: 5px 5px; border: none; font-size: 2.5mm; }
+            .toggle-button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            }
+
+            .toggle-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="plot"></div>
+        <script>
+            const data = [
+                { x: 190.72999572753906, y: 239.514892578125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_035_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 92.94487762451172, y: 219.5771484375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_045_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 384.39739990234375, y: 251.6746826171875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_018_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 124.75770568847656, y: 691.5478515625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_006_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 744.5164794921875, y: 380.9992370605469, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_041_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 537.48486328125, y: 419.43463134765625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_013_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 218.982177734375, y: 721.5406494140625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_041_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 54.114437103271484, y: 391.2232360839844, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_022_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 344.7153625488281, y: 134.03802490234375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_013_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 166.75929260253906, y: 136.93359375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_030_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 39.58149719238281, y: 371.6114501953125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_014_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 716.7987060546875, y: 208.74267578125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_033_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 708.1881713867188, y: 256.60906982421875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_012_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 486.9737548828125, y: 311.125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_017_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 800.0, y: 237.76605224609375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_043_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 289.532958984375, y: 800.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_028_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 203.06845092773438, y: 668.919921875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_031_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 622.4611206054688, y: 72.834228515625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_016_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 770.7658081054688, y: 360.5307922363281, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_003_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 523.990478515625, y: 551.6015625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_019_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 220.91470336914062, y: 426.323974609375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_045_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 217.22357177734375, y: 660.4454956054688, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_001_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 0.0, y: 188.44805908203125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_032_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 492.9171447753906, y: 535.1407470703125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_024_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 273.3863525390625, y: 471.7083740234375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_019_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 544.77685546875, y: 182.2669677734375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_015_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 89.49847412109375, y: 265.9403076171875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_008_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 683.5902709960938, y: 82.85992431640625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_002_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 9.287052154541016, y: 322.595458984375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_035_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 558.8646850585938, y: 507.82177734375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_050_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 30.658546447753906, y: 462.6603698730469, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_050_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 355.3900146484375, y: 90.56268310546875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_040_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 683.365234375, y: 453.4648742675781, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_002_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 632.44921875, y: 495.9029541015625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_025_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 143.22021484375, y: 133.47601318359375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_029_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 530.7134399414062, y: 625.6611328125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_004_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 711.7908325195312, y: 418.3418884277344, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_028_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 15.042860984802246, y: 465.2001953125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_009_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 87.53546905517578, y: 430.1165466308594, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_011_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 575.8690795898438, y: 0.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_008_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 377.0581359863281, y: 537.2733154296875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_040_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 469.1424865722656, y: 589.1165771484375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_047_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 432.3523864746094, y: 130.4139404296875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_046_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 14.678261756896973, y: 371.4539489746094, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_018_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 698.1045532226562, y: 35.6141357421875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_049_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 6.474953651428223, y: 179.068115234375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_020_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 762.5511474609375, y: 46.3106689453125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_021_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 107.3516845703125, y: 582.5189208984375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/spon_Lucy_Spont_039_1.wav", sampled: false, rank: 100, score: 0.0, category: "spon", category_color: "#ffb482", color: "transparent" },
+{ x: 170.4657745361328, y: 40.16082763671875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_020_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+{ x: 571.3587646484375, y: 235.899658203125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/audios_upload/read_Lucy_Read_031_1.wav", sampled: false, rank: 100, score: 0.0, category: "read", category_color: "#a1c9f4", color: "transparent" },
+            ];
+
+            const plot = document.getElementById('plot');
+            const audioPlayers = [];
+
+
+            function toggleAllText() {
+                var audioInfos = document.querySelectorAll('.audio-info');
+                var button = document.querySelector('.toggle-button');
+                var allHidden = true;
+
+                // Check if all divs are currently hidden
+                audioInfos.forEach(function (div) {
+                    if (div.style.display !== 'none') {
+                        allHidden = false;
+                    }
+                });
+
+                // Toggle visibility based on current state
+                audioInfos.forEach(function (div) {
+                    if (allHidden) {
+                        div.style.display = 'block';  // Show all if all are hidden
+                        button.textContent = 'Hide All Audio Info';
+                    } else {
+                        div.style.display = 'none';   // Hide all if any are visible
+                        button.textContent = 'Show All Audio Info';
+                    }
+                });
+            }
+
+
+            data.forEach(point => {
+                const audioPlayer = document.createElement('div');
+                audioPlayer.className = 'audio-player';
+                audioPlayer.style.left = `${point.x}px`;
+                audioPlayer.style.top = `${point.y}px`;
+
+                const audio = document.createElement('audio');
+                audio.src = point.audio;
+                audio.controls = false;
+
+                const audioInfo = document.createElement('div');
+                audioInfo.className = 'audio-info';
+                audioInfo.textContent = point.audio.split('/').pop();
+
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button';
+                playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                playButton.style.backgroundSize = 'contain';
+                playButton.style.backgroundRepeat = 'no-repeat';
+                playButton.style.width = '15px';
+                playButton.style.height = '15px';
+                playButton.style.border = 'none';
+                playButton.style.backgroundColor = 'transparent';
+                playButton.style.backgroundColor = point.category_color;
+
+                playButton.addEventListener('click', () => {
+                    if (audio.paused) {
+                        audio.play();
+                        playButton.textContent = 'Pause';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/pause-play-icon/pause-play-icon-17.jpg')";
+                    } else {
+                        audio.pause();
+                        playButton.textContent = 'Play';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                    }
+                });
+
+            audioPlayer.appendChild(audioInfo);
+            audioPlayer.appendChild(playButton);
+
+            if (point.sampled === true) {
+                const audioRANK = document.createElement('div');
+                audioRANK.className = 'rank-info';
+                audioRANK.textContent = ` Rank: ${point.rank}  Score: ${point.score}`;
+                if (point.rank == 1) {
+                    audioRANK.textContent = ` Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.color = 'black';
+                    audioRANK.style.backgroundImage = "url('https://icon-library.com/images/cherry1600.png')";
+                    audioRANK.style.backgroundSize = 'contain';
+                    audioRANK.style.backgroundRepeat = 'no-repeat';
+                    audioRANK.style.width = '30px';
+                    audioRANK.style.height = '30px';
+                } else {
+
+                    audioRANK.textContent = `Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.backgroundColor = point.color;
+                }
+
+                audioPlayer.appendChild(audioRANK);
+            }
+
+
+            audioPlayers.push(audioPlayer);
+            plot.appendChild(audioPlayer);
+            });
+        </script>
+        <h1>LucyMPM</h1>
+        <h2>-</h2>
+        <h3>Transcript: -</h3>
+        <button class="toggle-button" onclick="toggleAllText()">Show All Audio Info</button>
+        <br />
+        <h3>UMAP_mpm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/plots/UMAP_mpm_fill100.svg"><br><hr>
+<h3>Kmeansplusplus_TSNE_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/plots/Kmeansplusplus_TSNE_fill100.svg"><br><hr>
+<h3>Kmeansplusplus_PCA_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/plots/Kmeansplusplus_PCA_fill100.svg"><br><hr>
+<h3>PCA_mpm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/plots/PCA_mpm_fill100.svg"><br><hr>
+<h3>TSNE_mpm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/plots/TSNE_mpm_fill100.svg"><br><hr>
+<h3>Kmeansplusplus_UMAP_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/speakingstyles/LucyMPM/plots/Kmeansplusplus_UMAP_fill100.svg"><br><hr>
+
+    </body>
+    </html>
+    
+    
