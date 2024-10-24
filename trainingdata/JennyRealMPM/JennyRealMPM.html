@@ -1,0 +1,255 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Audio Points Plot</title>
+        <style>
+            body { font-family: Arial, sans-serif; text-align: center; }
+            #plot { 
+                width: 800px; 
+                height: 800px;
+                border: 1px solid #ccc; 
+                position: relative; 
+                background-image: url(https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/UMAP_mpm_fill100.svg);
+                background-size: contain;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            .audio-player { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: inline-block; margin: 5px; }
+            .audio-info { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm;  }
+            .rank-info { position: absolute; top: 100%; left: 0; width: 100%; background-color: white; color: black; padding: 2px; text-align: center; font-size: 2.5mm; }
+            .play-button { cursor: pointer; color: black; padding: 5px 5px; border: none; font-size: 2.5mm; }
+            .toggle-button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            }
+
+            .toggle-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="plot"></div>
+        <script>
+            const data = [
+                { x: 153.4436798095703, y: 716.073974609375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12862.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 503.44415283203125, y: 307.49517822265625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11181.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 304.2524108886719, y: 362.3197937011719, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10784.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 464.5424499511719, y: 113.08734130859375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10593.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 6.628587245941162, y: 614.4484252929688, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12049.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 11.834271430969238, y: 613.9371337890625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13371.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 74.99153137207031, y: 540.02685546875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10639.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 504.5291748046875, y: 92.5447998046875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10491.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 475.357421875, y: 581.94384765625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11999.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 50.84260559082031, y: 532.8792724609375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10832.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 800.0, y: 129.66357421875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11273.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 407.2467346191406, y: 468.8392639160156, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10283.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 258.10205078125, y: 730.3382568359375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10326.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 579.0072631835938, y: 186.8060302734375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13810.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 57.4267692565918, y: 488.8117980957031, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10260.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 111.60549926757812, y: 478.9770812988281, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13404.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 615.620849609375, y: 208.4615478515625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13346.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 403.9598083496094, y: 766.7974853515625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11977.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 438.5113220214844, y: 333.1747131347656, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10905.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 51.02680969238281, y: 523.536376953125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10915.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 505.2933349609375, y: 84.816650390625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11126.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 387.58837890625, y: 751.1189575195312, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13737.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 686.48193359375, y: 204.841064453125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12932.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 594.402587890625, y: 550.689453125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10759.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 698.2067260742188, y: 72.1700439453125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12999.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 173.3941192626953, y: 428.9124450683594, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13694.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 411.51513671875, y: 627.5936279296875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10831.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 109.89950561523438, y: 458.564697265625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01281.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 473.55633544921875, y: 313.5538635253906, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10797.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 101.13451385498047, y: 74.69354248046875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01237.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 320.3810119628906, y: 362.9504089355469, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13305.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 52.177608489990234, y: 90.791015625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01315.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 657.0941772460938, y: 159.62359619140625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10344.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 584.8715209960938, y: 333.1479187011719, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13561.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 196.9258575439453, y: 0.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01363.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 413.6011047363281, y: 231.5606689453125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13110.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 198.49388122558594, y: 547.631591796875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11760.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 601.1466064453125, y: 58.3499755859375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13293.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 592.5969848632812, y: 518.6748657226562, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11858.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 699.0435791015625, y: 157.786865234375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10379.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 240.70697021484375, y: 663.824462890625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11575.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 352.0859375, y: 789.2136840820312, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11611.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 403.9950866699219, y: 153.6676025390625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10240.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 162.8292236328125, y: 725.9967651367188, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12673.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 512.26025390625, y: 326.8514099121094, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12573.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 492.0103454589844, y: 285.159423828125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10452.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 625.3682250976562, y: 480.7451171875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12700.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 354.0589904785156, y: 717.6350708007812, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12922.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 95.371337890625, y: 622.9444580078125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11277.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 464.6258239746094, y: 578.60595703125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12262.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 276.2825927734375, y: 596.3591918945312, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11506.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 332.7372131347656, y: 596.4274291992188, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12446.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 412.53009033203125, y: 307.1656799316406, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10878.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 602.7423095703125, y: 452.0359802246094, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11526.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 254.8994140625, y: 505.1921691894531, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12797.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 106.17298889160156, y: 440.16314697265625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10863.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 5.572469234466553, y: 625.648681640625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10707.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 697.9948120117188, y: 435.24285888671875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11470.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 34.75950241088867, y: 579.8524169921875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11703.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 449.70916748046875, y: 442.3304443359375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10316.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 357.3183898925781, y: 745.3175048828125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11288.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 416.927490234375, y: 210.54986572265625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13210.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 634.61083984375, y: 471.34661865234375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13488.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 503.58544921875, y: 238.76409912109375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10486.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 488.2770080566406, y: 416.8385009765625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10456.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 435.91021728515625, y: 540.2859497070312, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10416.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 29.988054275512695, y: 114.80572509765625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01338.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 338.2587585449219, y: 669.9530029296875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12142.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 642.7538452148438, y: 452.84918212890625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12059.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 128.7515106201172, y: 37.17291259765625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01053.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 513.1853637695312, y: 82.64801025390625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10655.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 709.7861938476562, y: 148.7257080078125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10039.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 265.33905029296875, y: 384.9880676269531, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13263.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 518.6426391601562, y: 279.861572265625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10503.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 625.571044921875, y: 303.6871337890625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12720.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 650.44189453125, y: 316.7955322265625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12115.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 49.459449768066406, y: 518.4891357421875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10187.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 510.9587707519531, y: 118.4888916015625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10636.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 792.3587646484375, y: 82.9091796875, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12738.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 595.0582885742188, y: 349.479736328125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13638.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 454.4122314453125, y: 237.8565673828125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10799.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 419.91461181640625, y: 125.8837890625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10892.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 212.70962524414062, y: 693.2088012695312, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12307.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 225.5973358154297, y: 720.3189697265625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11757.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 262.6675109863281, y: 594.1695556640625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_12502.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 296.2100830078125, y: 557.5068359375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11290.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 390.1285400390625, y: 674.9257202148438, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11182.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 507.086181640625, y: 183.98529052734375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10400.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 408.39495849609375, y: 646.4863891601562, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11636.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 27.748172760009766, y: 107.665283203125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01377.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 101.8866195678711, y: 180.18682861328125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01190.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 498.8925476074219, y: 184.23382568359375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13801.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 307.716552734375, y: 380.859130859375, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10490.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 0.0, y: 146.64019775390625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_01242.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 749.7393798828125, y: 330.0058288574219, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_13528.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 226.19056701660156, y: 661.6356811523438, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10685.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 459.7765808105469, y: 495.846923828125, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11660.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 217.20628356933594, y: 800.0, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10692.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 396.4113464355469, y: 654.91259765625, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_10530.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+{ x: 413.0734558105469, y: 535.3142700195312, audio: "https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/audios_upload/natural_11625.wav", sampled: false, rank: 100, score: 0.0, category: "natural", category_color: "#a1c9f4", color: "transparent" },
+            ];
+
+            const plot = document.getElementById('plot');
+            const audioPlayers = [];
+
+
+            function toggleAllText() {
+                var audioInfos = document.querySelectorAll('.audio-info');
+                var button = document.querySelector('.toggle-button');
+                var allHidden = true;
+
+                // Check if all divs are currently hidden
+                audioInfos.forEach(function (div) {
+                    if (div.style.display !== 'none') {
+                        allHidden = false;
+                    }
+                });
+
+                // Toggle visibility based on current state
+                audioInfos.forEach(function (div) {
+                    if (allHidden) {
+                        div.style.display = 'block';  // Show all if all are hidden
+                        button.textContent = 'Hide All Audio Info';
+                    } else {
+                        div.style.display = 'none';   // Hide all if any are visible
+                        button.textContent = 'Show All Audio Info';
+                    }
+                });
+            }
+
+
+            data.forEach(point => {
+                const audioPlayer = document.createElement('div');
+                audioPlayer.className = 'audio-player';
+                audioPlayer.style.left = `${point.x}px`;
+                audioPlayer.style.top = `${point.y}px`;
+
+                const audio = document.createElement('audio');
+                audio.src = point.audio;
+                audio.controls = false;
+
+                const audioInfo = document.createElement('div');
+                audioInfo.className = 'audio-info';
+                audioInfo.textContent = point.audio.split('/').pop();
+
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button';
+                playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                playButton.style.backgroundSize = 'contain';
+                playButton.style.backgroundRepeat = 'no-repeat';
+                playButton.style.width = '15px';
+                playButton.style.height = '15px';
+                playButton.style.border = 'none';
+                playButton.style.backgroundColor = 'transparent';
+                playButton.style.backgroundColor = point.category_color;
+
+                playButton.addEventListener('click', () => {
+                    if (audio.paused) {
+                        audio.play();
+                        playButton.textContent = 'Pause';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/pause-play-icon/pause-play-icon-17.jpg')";
+                    } else {
+                        audio.pause();
+                        playButton.textContent = 'Play';
+                        playButton.style.backgroundImage = "url('https://icon-library.com/images/play-512_97524.png')";
+                    }
+                });
+
+            audioPlayer.appendChild(audioInfo);
+            audioPlayer.appendChild(playButton);
+
+            if (point.sampled === true) {
+                const audioRANK = document.createElement('div');
+                audioRANK.className = 'rank-info';
+                audioRANK.textContent = ` Rank: ${point.rank}  Score: ${point.score}`;
+                if (point.rank == 1) {
+                    audioRANK.textContent = ` Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.color = 'black';
+                    audioRANK.style.backgroundImage = "url('https://icon-library.com/images/cherry1600.png')";
+                    audioRANK.style.backgroundSize = 'contain';
+                    audioRANK.style.backgroundRepeat = 'no-repeat';
+                    audioRANK.style.width = '30px';
+                    audioRANK.style.height = '30px';
+                } else {
+
+                    audioRANK.textContent = `Rank: ${point.rank}   Score: ${point.score}`;
+                    audioRANK.style.backgroundColor = point.color;
+                }
+
+                audioPlayer.appendChild(audioRANK);
+            }
+
+
+            audioPlayers.push(audioPlayer);
+            plot.appendChild(audioPlayer);
+            });
+        </script>
+        <h1>JennyRealMPM</h1>
+        <h2>-</h2>
+        <h3>Transcript: -</h3>
+        <button class="toggle-button" onclick="toggleAllText()">Show All Audio Info</button>
+        <br />
+        <h3>data_prosody_distribution.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/data_prosody_distribution.svg"><br><hr>
+<h3>TSNE_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/TSNE_wavlm_fill100.svg"><br><hr>
+<h3>UMAP_mpm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/UMAP_mpm_fill100.svg"><br><hr>
+<h3>Kmeansplusplus_TSNE_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/Kmeansplusplus_TSNE_fill100.svg"><br><hr>
+<h3>Kmeansplusplus_PCA_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/Kmeansplusplus_PCA_fill100.svg"><br><hr>
+<h3>PCA_mpm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/PCA_mpm_fill100.svg"><br><hr>
+<h3>TSNE_mpm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/TSNE_mpm_fill100.svg"><br><hr>
+<h3>Kmeansplusplus_UMAP_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/Kmeansplusplus_UMAP_fill100.svg"><br><hr>
+<h3>PCA_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/PCA_wavlm_fill100.svg"><br><hr>
+<h3>UMAP_wavlm_fill100.svg</h3><img src="https://github.com/aadigwe/LSM_vizprosody/raw/main/trainingdata/JennyRealMPM/plots/UMAP_wavlm_fill100.svg"><br><hr>
+
+    </body>
+    </html>
+    
+    
